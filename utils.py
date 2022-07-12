@@ -27,8 +27,11 @@ class Meter:
 
 def iou_metric(pred, label):
     # intersection
-    intersection  = torch.sum(pred == label)
-    union = 2 * pred.numel() - intersection
+    intersection  = (pred == label).float()
+    background_mask = (label != 0).float()
+    intersection = torch.sum(intersection * background_mask)
+    # union
+    union = 2 * pred.numel() - intersection - (2 * torch.sum(label == 0)) # removing pixels with '0' label
     iou = intersection / union
     return iou
 
