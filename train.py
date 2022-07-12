@@ -3,7 +3,6 @@ from transforms import NumpyToTensor, Resize, Compose
 from dataset import Dataset
 import argparse
 import math
-from tqdm.auto import tqdm
 import time
 import os
 
@@ -59,19 +58,15 @@ def main(args):
 
     # start time
     start_time = time.time()
-
-    for epoch in tqdm(range(args.epochs)):
+    print('training started...')
+    for epoch in range(args.epochs):
         train_start_time = time.time()
 
         # training phase
-        for i, batch in tqdm(
-            enumerate(train_dl),
-            total=len(train_dl),
-            leave=True
-        ):
+        for i, batch in enumerate(train_dl):
             curr_loss = train_one_batch(model, batch, criterion, optimizer, device)
             loss_meter.update(curr_loss)
-            global_step = (len(train_ds) * epoch) + i
+            global_step = (len(train_dl) * epoch) + i
             writer.add_scalar('train_loss', curr_loss, global_step)
         
         train_end_time = time.time()
@@ -82,14 +77,10 @@ def main(args):
         val_start_time = time.time()
 
         # validation phase
-        for i, batch in tqdm(
-            enumerate(val_dl),
-            total=len(val_dl),
-            leave=True
-        ):
+        for i, batch in enumerate(val_dl):
             curr_metric = validate_one_batch(model, batch, metric, device)
             metric_meter.update(curr_metric)
-            global_step = (len(val_ds) * epoch) + i
+            global_step = (len(val_dl) * epoch) + i
             writer.add_scalar('val_metric', curr_metric, global_step)
         
         
@@ -97,11 +88,13 @@ def main(args):
         # adding number of training images processed
         processing_time = len(val_ds) / (val_end_time - val_start_time)
         writer.add_scalar('val_images_processed', processing_time, epoch)
+        print(f"epoch: {epoch:04d}, train_loss: {loss_meter:4.4f}, val_metric: {metric_meter:4.4f}")
 
     end_time = time.time()
     print(f"total time taken to finish trainig: {end_time - start_time}")
 
-    save_path = os.path.join(args.model_dir, time.strftime('%Y-%m-%d-%H-%M'))
+    fname = f"{time.strftime('%Y-%m-%d-%H-%M')}_model.pt"
+    save_path = os.path.join(args.model_dir, fname)
     state_dict = {'model_state': model.state_dict()}
     torch.save(state_dict, save_path)
 

@@ -49,7 +49,7 @@ def train_one_batch(
     optimizer.zero_grad()
     return loss.item()
 
-def predict_one_epoch(
+def predict_one_batch(
     model,
     batch,
     device
