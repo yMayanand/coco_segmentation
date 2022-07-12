@@ -8,11 +8,14 @@ class Dataset:
     """
     creates coco dataset 
     """
-    def __init__(self, root, image_set, transforms=None):
+    def __init__(self, root, image_set, transforms=None, disk_annot_path='./annot_disk'):
         PATH = {
             "train": ("train2017", os.path.join("annotations", "instances_train2017.json")),
             "val": ("val2017", os.path.join("annotations", "instances_val2017.json")),
         }
+
+        self.annot_path = disk_annot_path
+        os.makedirs(self.annot_path, exist_ok=True)
 
         img_folder, ann_file = PATH[image_set]
         self.img_folder = os.path.join(root, img_folder)
@@ -23,6 +26,7 @@ class Dataset:
         self.coco = COCO(ann_file)
         self.img_ids = self.coco.getImgIds()
         self.filter_empty()
+        self.write_anno_to_disk()
 
 
     def __len__(self):
@@ -55,6 +59,23 @@ class Dataset:
         mask[masks.sum(axis=0) > 1] = 0 # ignore overlapping part of instances
         return mask
     
+    def write_anno_to_disk(self):
+        print('writing annotations to disk')
+        for i in range(len(self.img_ids)):
+            img_data = self.coco.loadImgs(self.img_ids[i])[0]
+            fname = img_data['file_name'].split('.')[0] + '.png'
+            path = os.path.join(self.annot_path, fname)
+            if not os.path.exists(path):
+                mask = self.get_anno(i)
+                cv2.imwrite(path, mask)
+
+    def get_fast_anno(self, idx):
+        img_data = self.coco.loadImgs(self.img_ids[idx])[0]
+        fname = img_data['file_name'].split('.')[0] + '.png'
+        path = os.path.join(self.annot_path, fname)
+        mask = cv2.imread(path, 0)
+        return mask
+    
     def filter_empty(self):
         print('removing samples without annotations...')
         for id in deepcopy(self.img_ids):
@@ -64,7 +85,7 @@ class Dataset:
         
 
     def __getitem__(self, idx):
-        image, mask = self.get_image(idx), self.get_anno(idx)
+        image, mask = self.get_image(idx), self.get_fast_anno(idx)
         if self.transform is not None:
             image, mask = self.transform(image, mask)
         return image, mask
