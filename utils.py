@@ -1,4 +1,5 @@
 import torch
+import gc
 
 class Meter:
     """
@@ -47,6 +48,9 @@ def train_one_batch(
     loss.backward()
     optimizer.step()
     optimizer.zero_grad()
+    del out, image, mask
+    gc.collect()
+    torch.cuda.empty_cache()
     return loss.item()
 
 def predict_one_batch(
@@ -61,6 +65,10 @@ def predict_one_batch(
     with torch.no_grad():
         out = model(image)['out']
         _, pred = torch.max(out, dim=1)
+
+    del out, image, mask
+    gc.collect()
+    torch.cuda.empty_cache()
         
     return pred.cpu().detach()
 
@@ -78,6 +86,11 @@ def validate_one_batch(
         out = model(image)['out']
         _, pred = torch.max(out, dim=1)
         model_metric = metric(pred, mask)
+
+    del out, image, mask
+    gc.collect()
+    torch.cuda.empty_cache()
+    
     return model_metric.item()
 
 
