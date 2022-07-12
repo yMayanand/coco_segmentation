@@ -118,7 +118,6 @@ def get_args_parser(add_help=True):
     parser.add_argument("--batch_size", default=16, type=int, help="batch size for training")
     parser.add_argument("--epochs", default=10, type=int, help="number of epochs to train")
     parser.add_argument("--lr", default=1e-3, type=float, help="learning rate for optimizer")
-    parser.add_argument("--log_folder", default='', type=float, help="learning rate for optimizer")
     parser.add_argument("--log_folder", default='general', type=str, help="folder name for tensorboard logging")
     parser.add_argument("--model_dir", default='./checkpoints', type=str, help="directory path to save our model")
 
