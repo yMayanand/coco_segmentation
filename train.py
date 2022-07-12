@@ -8,6 +8,7 @@ import os
 
 import torch
 import torch.nn as nn
+from torch.jit import script
 from torchvision import models
 from torch.utils.tensorboard import SummaryWriter
 
@@ -20,8 +21,8 @@ def main(args):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     tfms = Compose([
-        #NumpyToTensor(),
-        Resize((args.size, args.size))
+        NumpyToTensor(),
+        script(Resize((args.size, args.size)))
     ])
 
     # main dataset
@@ -38,8 +39,14 @@ def main(args):
     model.to(device)
 
     # dataloaders
-    train_dl = torch.utils.data.DataLoader(train_ds, batch_size=args.batch_size, shuffle=True)
-    val_dl = torch.utils.data.DataLoader(val_ds, batch_size=args.batch_size)
+    train_dl = torch.utils.data.DataLoader(
+        train_ds, 
+        batch_size=args.batch_size,  
+        shuffle=True,
+        num_workers=2
+    )
+
+    val_dl = torch.utils.data.DataLoader(val_ds, batch_size=args.batch_size, num_workers=2)
 
     # loss function
     criterion = nn.CrossEntropyLoss()

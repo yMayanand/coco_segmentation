@@ -112,11 +112,12 @@ class ConvertImageDtype:
         image = F.convert_image_dtype(image, self.dtype)
         return image, target
 
-class Resize:
+class Resize(nn.Module):
     def __init__(self, size):
+        super().__init__()
         self.size = size
-
-    def __call__(self, image, target):
+  
+    def forward(self, image, target):
         image = F.resize(image, self.size)
         target = F.resize(target.unsqueeze(0), self.size, interpolation=T.InterpolationMode.NEAREST)
         return image, target.squeeze(0)
