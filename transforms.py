@@ -2,6 +2,7 @@ import random
 import numpy as np
 
 import torch
+import torch.nn as nn
 import torchvision.transforms as T
 from torchvision.transforms import functional as F
 
