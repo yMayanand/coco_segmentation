@@ -1,5 +1,5 @@
 from utils import *
-from transforms import NumpyToTensor, Resize, Compose
+from transforms import NumpyToTensor, Resize, Compose, RandomResizedCrop
 from dataset import Dataset
 import argparse
 import math
@@ -22,7 +22,8 @@ def main(args):
 
     tfms = Compose([
         NumpyToTensor(),
-        script(Resize((args.size, args.size)))
+        RandomResizedCrop(256, scale=(0.4, 1.), ratio=(0.95, 1.))
+        #script(Resize((args.size, args.size)))
     ])
 
     # main dataset
