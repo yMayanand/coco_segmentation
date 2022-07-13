@@ -50,7 +50,7 @@ def main(args):
     val_dl = torch.utils.data.DataLoader(val_ds, batch_size=args.batch_size, num_workers=2)
 
     # loss function
-    criterion = nn.CrossEntropyLoss(ignore_index=0)
+    criterion = nn.CrossEntropyLoss()
 
     # metric to monitor
     metric = iou_metric
