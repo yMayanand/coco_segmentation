@@ -71,9 +71,15 @@ def main(args):
 
         # training phase
         for i, batch in enumerate(train_dl):
-            curr_loss = train_one_batch(model, batch, criterion, optimizer, device)
-            loss_meter.update(curr_loss)
             global_step = (len(train_dl) * epoch) + i
+            curr_loss = train_one_batch(
+                model, batch, 
+                criterion, optimizer, 
+                device, global_step=global_step, 
+                writer=writer
+            )
+
+            loss_meter.update(curr_loss)
             writer.add_scalar('train_loss', curr_loss, global_step)
         
         train_end_time = time.time()

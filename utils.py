@@ -1,5 +1,13 @@
 import torch
 import gc
+import GPUtil
+
+def get_gpu_usage():
+    gpu = GPUtil.getGPUs()[0]
+    gpu_load = gpu.load * 100
+    gpu_memory_util = gpu.memoryUtil * 100
+    return gpu_load, gpu_memory_util
+
 
 class Meter:
     """
@@ -40,7 +48,9 @@ def train_one_batch(
     batch, 
     criterion,
     optimizer,
-    device
+    device,
+    global_step=None,
+    writer=None
 ):
     image, mask = batch
     image = image.to(device)
@@ -51,6 +61,10 @@ def train_one_batch(
     loss.backward()
     optimizer.step()
     optimizer.zero_grad()
+    if writer is not None:
+        load, mem_util = get_gpu_usage()
+        writer.add_scalar('gpu_load', load, global_step)
+        writer.add_scalar('gpu_mem_util', mem_util, global_step)
     del out, image, mask
     gc.collect()
     torch.cuda.empty_cache()
