@@ -1,4 +1,5 @@
 import os
+from turtle import back
 import cv2
 import numpy as np
 from copy import deepcopy
@@ -61,13 +62,19 @@ class Dataset:
     
     def write_anno_to_disk(self):
         print('writing annotations to disk')
-        for i in range(len(self.img_ids)):
-            img_data = self.coco.loadImgs(self.img_ids[i])[0]
+
+        def write_anno(idx):
+            img_data = self.coco.loadImgs(self.img_ids[idx])[0]
             fname = img_data['file_name'].split('.')[0] + '.png'
             path = os.path.join(self.annot_path, fname)
             if not os.path.exists(path):
-                mask = self.get_anno(i)
+                mask = self.get_anno(idx)
                 cv2.imwrite(path, mask)
+
+        from joblib import Parallel, delayed
+
+        temp = Parallel(backend='threading')(delayed(write_anno)(i) for i in range(len(self.img_ids)))
+        del temp
 
     def get_fast_anno(self, idx):
         img_data = self.coco.loadImgs(self.img_ids[idx])[0]
