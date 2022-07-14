@@ -20,20 +20,29 @@ def main(args):
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-    tfms = Compose([
+    # train transforms
+    train_tfms = Compose([
         NumpyToTensor(),
-        RandomResizedCrop(256, scale=(0.4, 1.), ratio=(0.95, 1.))
+        RandomResizedCrop(args.size, scale=(0.4, 1.), ratio=(0.95, 1.))
         #script(Resize((args.size, args.size)))
     ])
 
+    # validation transforms
+    val_tfms = Compose([
+        NumpyToTensor(),
+        #RandomResizedCrop(256, scale=(0.4, 1.), ratio=(0.95, 1.))
+        script(Resize((args.size, args.size)))
+    ])
+
     # main dataset
-    ds = Dataset(args.root_dir, args.image_set, transforms=tfms)
+    ds = Dataset(args.root_dir, args.image_set, transforms=train_tfms)
 
     # splitting the main dataset
     val_split = math.floor(args.val_split * len(ds))
     train_split = len(ds) - val_split
 
     train_ds, val_ds = torch.utils.data.random_split(ds, (train_split, val_split))
+    val_ds.transform = val_tfms
 
     # segmentation model
     model = models.segmentation.fcn_resnet50(num_classes=args.num_classes, pretrained_backbone=True)
