@@ -57,7 +57,7 @@ class Dataset:
         masks = np.stack(masks) 
         mask = masks * cat_ids[:, None, None] # shape (num_instances, h, w)
         mask = np.max(mask, axis=0) # merge all instances
-        mask[masks.sum(axis=0) > 1] = 0 # ignore overlapping part of instances
+        mask[masks.sum(axis=0) > 1] = 255 # ignore overlapping part of instances
         return mask
     
     def write_anno_to_disk(self):
