@@ -48,6 +48,9 @@ def main(args):
     model = models.segmentation.fcn_resnet50(num_classes=args.num_classes, pretrained_backbone=True)
     model.to(device)
 
+    if args.finetune:
+        freeze_backbone(model)
+
     # dataloaders
     train_dl = torch.utils.data.DataLoader(
         train_ds, 
@@ -136,6 +139,8 @@ def get_args_parser(add_help=True):
     parser.add_argument("--lr", default=1e-3, type=float, help="learning rate for optimizer")
     parser.add_argument("--log_folder", default='general', type=str, help="folder name for tensorboard logging")
     parser.add_argument("--model_dir", default='./checkpoints', type=str, help="directory path to save our model")
+    parser.add_argument("--finetune", default=True, type=bool, help="flag to start finetuning")
+
 
     return parser
 

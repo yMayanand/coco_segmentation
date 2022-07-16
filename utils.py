@@ -110,7 +110,8 @@ def validate_one_batch(
     
     return model_metric.item()
 
-
-
+def freeze_backbone(model, unfreeze=False):
+    for param in model.backbone.parameters():
+        param.requires_grad = unfreeze
 
 
