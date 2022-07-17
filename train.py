@@ -31,7 +31,7 @@ def main(args):
     val_tfms = Compose([
         NumpyToTensor(),
         #RandomResizedCrop(256, scale=(0.4, 1.), ratio=(0.95, 1.))
-        script(Resize((args.size, args.size)))
+        #script(Resize((args.size, args.size)))
     ])
 
     # main dataset
@@ -59,7 +59,7 @@ def main(args):
         num_workers=2
     )
 
-    val_dl = torch.utils.data.DataLoader(val_ds, batch_size=args.batch_size, num_workers=2)
+    val_dl = torch.utils.data.DataLoader(val_ds, batch_size=1, num_workers=2)
 
     # loss function
     criterion = nn.CrossEntropyLoss(ignore_index=255)
