@@ -123,8 +123,8 @@ def main(args):
         
         save_path = os.path.join(session_dir, f"epoch_{epoch}.pt")
 
-    state_dict = {'model_state': model.state_dict()}
-    torch.save(state_dict, save_path)
+        state_dict = {'model_state': model.state_dict()}
+        torch.save(state_dict, save_path)
 
     end_time = time.time()
     print(f"total time taken to finish trainig: {end_time - start_time}")
