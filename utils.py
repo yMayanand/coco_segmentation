@@ -37,11 +37,16 @@ def iou_metric(pred, label):
     # intersection
     intersection  = (pred == label).float()
     background_mask = (label != 0).float()
-    intersection = torch.sum(intersection * background_mask)
+    intersection = torch.sum(intersection * background_mask, dim=(1, 2))
+
     # union
-    union = 2 * pred.numel() - intersection - (2 * torch.sum(label == 0)) # removing pixels with '0' label
+    union = 2 * torch.sum(pred==pred, dim=(1, 2)) - intersection - torch.sum(label == 0, dim=(1, 2)) - torch.sum(pred == 0, dim=(1, 2)) # removing pixels with '0' label
     iou = intersection / union
-    iou = torch.tensor([1.]) if torch.isnan(iou) else iou
+
+    # TODO: compute iou for batch
+    iou[torch.isnan(iou)] = 1.
+    #iou = torch.tensor([1.]) if torch.isnan(iou) else iou
+    iou = torch.mean(iou)
     return iou
 
 def train_one_batch(

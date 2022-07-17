@@ -50,6 +50,12 @@ def main(args):
 
     if args.finetune:
         freeze_backbone(model)
+    
+    if args.resume:
+        if os.path.exists(args.resume):
+            state_dict = torch.load(args.resume)
+            model.load_state_dict(state_dict['model_state'])
+
 
     # dataloaders
     train_dl = torch.utils.data.DataLoader(
@@ -116,7 +122,7 @@ def main(args):
         writer.add_scalar('val_images_processed', processing_time, epoch)
         print(f"epoch: {epoch:04d}, train_loss: {loss_meter}, val_metric: {metric_meter}")
     
-        dir_name = f"{time.strftime('%Y-%m-%d-%H-%M')}_model_checkpoints"
+        dir_name = f"{time.strftime('%Y-%m-%d-%H')}_model_checkpoints"
         session_dir = os.path.join(args.model_dir, dir_name)
         if not os.path.exists(session_dir):
             os.makedirs(session_dir)
@@ -146,6 +152,7 @@ def get_args_parser(add_help=True):
     parser.add_argument("--log_folder", default='general', type=str, help="folder name for tensorboard logging")
     parser.add_argument("--model_dir", default='./checkpoints', type=str, help="directory path to save our model")
     parser.add_argument("--finetune", default=True, type=bool, help="flag to start finetuning")
+    parser.add_argument("--resume", default=None, type=str, help="path to the checkpoint")
 
 
     return parser
