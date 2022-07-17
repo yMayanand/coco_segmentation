@@ -41,6 +41,7 @@ def iou_metric(pred, label):
     # union
     union = 2 * pred.numel() - intersection - (2 * torch.sum(label == 0)) # removing pixels with '0' label
     iou = intersection / union
+    iou = torch.tensor([1.]) if torch.isnan(iou) else iou
     return iou
 
 def train_one_batch(

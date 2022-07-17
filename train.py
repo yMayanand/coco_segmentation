@@ -106,8 +106,8 @@ def main(args):
         for i, batch in enumerate(val_dl):
             curr_metric = validate_one_batch(model, batch, metric, device)
             metric_meter.update(curr_metric)
-            global_step = (len(val_dl) * epoch) + i
-            writer.add_scalar('val_metric', curr_metric, global_step)
+            #global_step = (len(val_dl) * epoch) + i
+        writer.add_scalar('val_metric', metric_meter.avg, global_step)
         
         
         val_end_time = time.time()
@@ -115,14 +115,20 @@ def main(args):
         processing_time = len(val_ds) / (val_end_time - val_start_time)
         writer.add_scalar('val_images_processed', processing_time, epoch)
         print(f"epoch: {epoch:04d}, train_loss: {loss_meter}, val_metric: {metric_meter}")
+    
+        dir_name = f"{time.strftime('%Y-%m-%d-%H-%M')}_model_checkpoints"
+        session_dir = os.path.join(args.model_dir, dir_name)
+        if not os.path.exists(session_dir):
+            os.makedirs(session_dir)
+        
+        save_path = os.path.join(session_dir, f"epoch_{epoch}.pt")
+
+    state_dict = {'model_state': model.state_dict()}
+    torch.save(state_dict, save_path)
 
     end_time = time.time()
     print(f"total time taken to finish trainig: {end_time - start_time}")
 
-    fname = f"{time.strftime('%Y-%m-%d-%H-%M')}_model.pt"
-    save_path = os.path.join(args.model_dir, fname)
-    state_dict = {'model_state': model.state_dict()}
-    torch.save(state_dict, save_path)
 
     
 
