@@ -9,7 +9,7 @@ import os
 import torch
 import torch.nn as nn
 from torch.jit import script
-from torchvision import models
+from torchvision import models, ResNet50_Weights
 from torch.utils.tensorboard import SummaryWriter
 
 
@@ -45,7 +45,7 @@ def main(args):
     val_ds.transform = val_tfms
 
     # segmentation model
-    model = models.segmentation.fcn_resnet50(num_classes=args.num_classes, pretrained_backbone=True)
+    model = models.segmentation.fcn_resnet50(num_classes=args.num_classes, weights_backbone=ResNet50_Weights.DEFAULT)
     model.to(device)
 
     if args.finetune:
