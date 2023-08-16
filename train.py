@@ -9,7 +9,7 @@ import os
 import torch
 import torch.nn as nn
 from torch.jit import script
-from torchvision import models, ResNet50_Weights
+from torchvision import models
 from torch.utils.tensorboard import SummaryWriter
 
 
