@@ -121,7 +121,7 @@ def main(args):
 
         # validation phase
         for i, batch in enumerate(val_dl):
-            curr_metric, val_loss = validate_one_batch(model, batch, metric, device)
+            curr_metric, val_loss = validate_one_batch(model, batch, metric, criterion, device)
             val_loss_meter.update(val_loss)
             metric_meter.update(curr_metric)
             #global_step = (len(val_dl) * epoch) + i
