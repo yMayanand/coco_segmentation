@@ -30,7 +30,7 @@ class Meter:
         self.avg = self.sum / self.count
 
     def __str__(self):
-        format = f"current_{self.name}: {self.val:6.4f}, average_{self.name}: {self.avg:6.4f}"
+        format = f"average_{self.name}: {self.avg:6.4f}"
         return format
 
 def iou_metric(pred, label):
@@ -117,7 +117,6 @@ def validate_one_batch(
     return model_metric.item()
 
 def freeze_backbone(model, unfreeze=False):
-    for param in model.backbone.parameters():
+    # changed this value
+    for param in model.encoder.parameters():
         param.requires_grad = unfreeze
-
-
