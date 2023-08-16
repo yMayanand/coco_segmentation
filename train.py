@@ -45,7 +45,7 @@ def main(args):
     val_ds.transform = val_tfms
 
     # segmentation model
-    model = models.segmentation.fcn_resnet50(num_classes=args.num_classes, weights_backbone=ResNet50_Weights.DEFAULT)
+    model = models.segmentation.fcn_resnet50(num_classes=args.num_classes, weights_backbone=models.ResNet50_Weights.DEFAULT)
     model.to(device)
 
     if args.finetune:
