@@ -62,7 +62,7 @@ def train_one_batch(
     image = image.to(device)
     mask = mask.to(device)
     model.train()
-    out = model(image)['out']
+    out = model(image)
     loss = criterion(out, mask)
     loss.backward()
     optimizer.step()
@@ -99,6 +99,7 @@ def validate_one_batch(
     model,
     batch,
     metric,
+    criterion,
     device
 ):
     image, mask = batch
@@ -106,15 +107,16 @@ def validate_one_batch(
     mask = mask.to(device)
     model.eval()
     with torch.no_grad():
-        out = model(image)['out']
+        out = model(image)
         _, pred = torch.max(out, dim=1)
         model_metric = metric(pred, mask)
+        loss = criterion(out, mask)
 
     del out, image, mask
     gc.collect()
     torch.cuda.empty_cache()
     
-    return model_metric.item()
+    return model_metric.item(), loss.item()
 
 def freeze_backbone(model, unfreeze=False):
     # changed this value
