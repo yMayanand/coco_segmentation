@@ -8,6 +8,7 @@ import os
 
 import torch
 import torch.nn as nn
+import segmentation_models_pytorch as smp
 from torch.jit import script
 from torchvision import models
 from torch.utils.tensorboard import SummaryWriter
@@ -45,7 +46,14 @@ def main(args):
     val_ds.transform = val_tfms
 
     # segmentation model
-    model = models.segmentation.fcn_resnet50(num_classes=args.num_classes, weights_backbone=models.ResNet50_Weights.DEFAULT)
+    # model = models.segmentation.fcn_resnet50(num_classes=args.num_classes, weights_backbone=models.ResNet50_Weights.DEFAULT)
+
+    model = smp.Unet(
+        encoder_name="resnet18",        # choose encoder, e.g. mobilenet_v2 or efficientnet-b7
+        encoder_weights="imagenet",     # use `imagenet` pre-trained weights for encoder initialization
+        in_channels=3,                  # model input channels (1 for gray-scale images, 3 for RGB, etc.)
+        classes=args.num_classes,                     # model output channels (number of classes in your dataset)
+    )
     model.to(device)
 
     if args.finetune:
