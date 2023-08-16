@@ -87,6 +87,9 @@ def main(args):
     # loss Meter
     loss_meter = Meter('train_ce_loss')
 
+    # loss Meter
+    val_loss_meter = Meter('val_ce_loss')
+
     # metric meter
     metric_meter = Meter('val_iou_metric')
 
@@ -118,10 +121,12 @@ def main(args):
 
         # validation phase
         for i, batch in enumerate(val_dl):
-            curr_metric = validate_one_batch(model, batch, metric, device)
+            curr_metric, val_loss = validate_one_batch(model, batch, metric, device)
+            val_loss_meter.update(val_loss)
             metric_meter.update(curr_metric)
             #global_step = (len(val_dl) * epoch) + i
         writer.add_scalar('val_metric', metric_meter.avg, global_step)
+        writer.add_scalar('val_loss', val_loss_meter.avg, global_step)
         
         
         val_end_time = time.time()
