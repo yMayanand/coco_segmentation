@@ -133,7 +133,7 @@ def main(args):
         # adding number of training images processed
         processing_time = len(val_ds) / (val_end_time - val_start_time)
         writer.add_scalar('val_images_processed', processing_time, epoch)
-        print(f"epoch: {epoch:04d}, train_loss: {loss_meter}, val_metric: {metric_meter}")
+        print(f"epoch: {epoch:04d}, train_loss: {loss_meter}, val_loss: {val_loss_meter}, val_metric: {metric_meter}")
     
         dir_name = f"{time.strftime('%Y-%m-%d-%H')}_model_checkpoints"
         session_dir = os.path.join(args.model_dir, dir_name)
