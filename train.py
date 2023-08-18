@@ -110,7 +110,7 @@ def main(args):
             )
 
             loss_meter.update(curr_loss)
-            writer.add_scalar('train_loss', curr_loss, global_step)
+            writer.add_scalar('loss/train', curr_loss, global_step)
         
         train_end_time = time.time()
         # adding number of training images processed
@@ -126,7 +126,7 @@ def main(args):
             metric_meter.update(curr_metric)
             #global_step = (len(val_dl) * epoch) + i
         writer.add_scalar('val_metric', metric_meter.avg, global_step)
-        writer.add_scalar('val_loss', val_loss_meter.avg, global_step)
+        writer.add_scalar('loss/val', val_loss_meter.avg, global_step)
         
         
         val_end_time = time.time()
