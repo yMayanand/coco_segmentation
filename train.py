@@ -130,7 +130,14 @@ def main(args):
         
         
         val_end_time = time.time()
-        # adding number of training images processed
+
+        epoch_duration = (train_start_time - val_end_time) / 60
+
+        print("#########################################################")
+        print(f"#  EPOCH {epoch} completed in {epoch_duration} minutes  #")
+        print("#########################################################")
+        
+        # adding number of validation images processed
         processing_time = len(val_ds) / (val_end_time - val_start_time)
         writer.add_scalar('val_images_processed', processing_time, epoch)
         print(f"epoch: {epoch:04d}, train_loss: {loss_meter}, val_loss: {val_loss_meter}, val_metric: {metric_meter}")
@@ -144,6 +151,7 @@ def main(args):
 
         state_dict = {'model_state': model.state_dict()}
         torch.save(state_dict, save_path)
+
 
     end_time = time.time()
     print(f"total time taken to finish trainig: {end_time - start_time}")
