@@ -1,5 +1,8 @@
 import os
+import gc
 import cv2
+import numpy as np
+import argparse
 
 import torch
 import torchvision.transforms as T
@@ -68,11 +71,12 @@ def main(
         in_channels=3,                  # model input channels (1 for gray-scale images, 3 for RGB, etc.)
         classes=args.num_classes,       # model output channels (number of classes in your dataset)
     )
-    model.load_state_dict(torch.load(args.ckpt))
+    model.load_state_dict(torch.load(args.ckpt)['model_state'])
     model.to(device)
   
     image = cv2.imread(args.img_path)
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    image = cv2.resize(image, (640, 608))
   
     tensor_image = T.ToTensor()(image)
     tensor_image = tensor_image.to(device)
@@ -100,6 +104,7 @@ def get_args_parser(add_help=True):
     parser.add_argument("--ckpt", type=str, help="checkpoint to the saved model")
     parser.add_argument("--img_path", type=str, help="path to the image file")
     parser.add_argument("--output_dir", default="results", type=str, help="directory where images will be saved")
+    parser.add_argument("--num_classes", default=91, type=int, help="number of classes in segmentation task")
 
     return parser
 
