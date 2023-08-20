@@ -134,7 +134,7 @@ def main(args):
         epoch_duration = (val_end_time - train_start_time) / 60
 
         print("#########################################################")
-        print(f"#    EPOCH {epoch} completed in {epoch_duration:.2f} minutes    #")
+        print(f"#    EPOCH {epoch} completed in {epoch_duration:.2f} minutes")
         print("#########################################################")
         
         # adding number of validation images processed
