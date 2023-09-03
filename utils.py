@@ -66,7 +66,7 @@ def train_one_batch(
     loss = criterion(out, mask)
     loss.backward()
     optimizer.step()
-    optimizer.zero_grad()
+    optimizer.zero_grad(set_to_none=True)
     if writer is not None:
         load, mem_util = get_gpu_usage()
         writer.add_scalar('gpu_load', load, global_step)
